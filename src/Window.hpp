@@ -21,9 +21,6 @@ namespace MazeSim {
 			std::string title;
 			int width, height;
 			void glfwWindowHints();
-
-			bool showDemo = false;
-			bool showOther = false;
 	};
 }
 #endif
