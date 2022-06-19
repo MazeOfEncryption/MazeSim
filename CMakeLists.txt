@@ -11,26 +11,30 @@ find_package(OpenGL REQUIRED)
 # find_package(imgui REQUIRED)
 
 add_subdirectory(lib/glfw)
+add_subdirectory(lib/glad)
 
 
 # Compile ImGui as static library 
 set(IMGUI_PATH "lib/imgui")
 file(GLOB IMGUI_SOURCES ${IMGUI_PATH}/*.cpp)
-add_library("ImGui" STATIC ${IMGUI_SOURCES} ${IMGUI_PATH}/backends/imgui_impl_glfw.cpp ${IMGUI_PATH}/backends/imgui_impl_opengl3.cpp)
-target_include_directories("ImGui" PUBLIC ${IMGUI_PATH})
-target_include_directories("ImGui" PUBLIC ${IMGUI_PATH}/backends)
-# target_compile_definitions("ImGui" PUBLIC IMGUI_IMPL_OPENGL_LOADER_GL3W)
-target_sources("ImGui" PRIVATE ${IMGUI_PATH}/backends/imgui_impl_glfw.cpp)
-target_sources("ImGui" PRIVATE ${IMGUI_PATH}/backends/imgui_impl_opengl3.cpp)
-target_link_libraries("ImGui" PUBLIC glfw)
+add_library(imgui STATIC ${IMGUI_SOURCES} ${IMGUI_PATH}/backends/imgui_impl_glfw.cpp ${IMGUI_PATH}/backends/imgui_impl_opengl3.cpp)
+target_include_directories(imgui PUBLIC ${IMGUI_PATH})
+target_include_directories(imgui PUBLIC ${IMGUI_PATH}/backends)
+# target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GL3W)
+target_sources(imgui PRIVATE ${IMGUI_PATH}/backends/imgui_impl_glfw.cpp)
+target_sources(imgui PRIVATE ${IMGUI_PATH}/backends/imgui_impl_opengl3.cpp)
+
+
+target_link_libraries(imgui PUBLIC glfw)
 
 
 file(GLOB_RECURSE SRCS ${PROJECT_SOURCE_DIR}/src/*.*)
 
 add_executable(MazeSim ${SRCS})
 
+target_link_libraries(MazeSim PUBLIC glad)
 target_link_libraries(MazeSim PUBLIC glfw)
-target_link_libraries(MazeSim PUBLIC "ImGui")
+target_link_libraries(MazeSim PUBLIC imgui)
 
 # target_link_libraries(MazeSim PUBLIC -mwindows)
 

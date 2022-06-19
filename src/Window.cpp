@@ -16,6 +16,9 @@ void MazeSim::Window::init() {
 	const char *title = this->title.c_str();
 	this->window = glfwCreateWindow(this->width, this->height, title, NULL, NULL);
 	glfwMakeContextCurrent(window);
+	gladLoadGL();
+	glEnable(GL_DEBUG_OUTPUT);
+
 	glfwSwapInterval(1); // Enable vsync
 
 	IMGUI_CHECKVERSION();
