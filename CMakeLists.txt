@@ -8,10 +8,13 @@ include(CTest)
 enable_testing()
 
 find_package(OpenGL REQUIRED)
+# find_package(Eigen3 3.3 REQUIRED)
 # find_package(imgui REQUIRED)
 
 add_subdirectory(lib/glad)
 add_subdirectory(lib/glfw)
+
+include_directories(lib/eigen)
 
 
 # Compile ImGui as static library 
@@ -35,6 +38,7 @@ add_executable(MazeSim ${SRCS})
 target_link_libraries(MazeSim PUBLIC glad)
 target_link_libraries(MazeSim PUBLIC glfw)
 target_link_libraries(MazeSim PUBLIC imgui)
+# target_link_libraries(MazeSim PUBLIC Eigen3::Eigen)
 
 # target_link_libraries(MazeSim PUBLIC -mwindows)
 

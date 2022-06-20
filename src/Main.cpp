@@ -4,8 +4,18 @@
 #include <random>
 #include "Point.hpp"
 #include "Window.hpp"
+	
+// #include <Eigen/Core>
+#include <Eigen/Geometry>
+
 using namespace MazeSim;
+
+Eigen::Matrix2d mat = Eigen::Rotation2Dd(EIGEN_PI / 4.0) * Eigen::Scaling(sqrt(2));
+Eigen::Matrix2d inv = mat.inverse();
+
 // using Point = std::pair<int, int>;
+
+// mat2 {{cos(x), -sin(x)},{sin(x), cos(x)}}
 
 Point toRectangular(Point in) {
     return {in.second % 2 == 0 ? in.first * 2 : in.first * 2 + 1, in.second};
@@ -22,7 +32,8 @@ void ShowCanvas(bool *p_open) {
     static float zoom = 1.0;
     static bool opt_enable_grid = true;
     static bool opt_enable_context_menu = true;
-    static bool adding_line = true;
+    static bool first_call = true;
+    static bool adding_line = false;
 
     static std::set<Point> board;
     static std::mt19937 gen(0);
@@ -37,11 +48,11 @@ void ShowCanvas(bool *p_open) {
     ImGui::Checkbox("Enable grid", &opt_enable_grid);
     ImGui::Checkbox("Enable context menu", &opt_enable_context_menu);
     if (ImGui::Button("Re-gen")) {
-        adding_line = true;
+        first_call = true;
     }
     ImGui::Text("Mouse Left: drag to add lines,\nMouse Right: drag to scroll, click for context menu.\nScroll wheel: Up to zoom in, Down to scroll out.");
 
-    if(adding_line) {
+    if(first_call) {
         board.clear();
         points.clear();
         for (int i = 0; i < 10; i++) {
@@ -82,7 +93,7 @@ void ShowCanvas(bool *p_open) {
     const float boxSize = 32.0f;
 
 
-    if (adding_line) {
+    if (first_call) {
         for (Point point : board) {
             Point rect = toRectangular(point);
             std::cout << point << " -> " << rect << std::endl;
@@ -94,20 +105,28 @@ void ShowCanvas(bool *p_open) {
                 points.push_back(ImVec2(rect.first * boxSize + boxSize, -rect.second * boxSize - boxSize));
             }
         }
-        adding_line = false;
+        first_call = false;
     }
 
+    Eigen::Vector2d pos {mouse_pos_in_canvas.x, mouse_pos_in_canvas.y};
+    Eigen::Vector2d trans = inv * pos;
+    Eigen::Vector2d nearest {floor((pos.x() - boxSize) / (2 * boxSize)), floor((-pos.y() - boxSize) / (2 * boxSize))};
     // Add first and second point
-    // if (is_hovered && !adding_line && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-    //     points.push_back(mouse_pos_in_canvas);
-    //     points.push_back(mouse_pos_in_canvas);
-    //     adding_line = true;
-    // }
-    // if (adding_line) {
-    //     points.back() = mouse_pos_in_canvas;
-    //     if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
-    //         adding_line = false;
-    // }
+    if (!adding_line && is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        std::cout << "=========================" << std::endl;
+        std::cout << "MousePos: " << nearest.x() << ", " << nearest.y() << std::endl;
+        // std::cout << "MouseInv: " << trans.x() << ", " << trans.y() << std::endl;
+        // std::cout << "MouseInv: " << floor(trans.x() / (2 * boxSize)) << ", " << floor(-trans.y() / (2 * boxSize)) << std::endl;
+        points.push_back(ImVec2(nearest.x() * boxSize * 2.0f + boxSize * 2.0f, -nearest.y() * boxSize * 2.0f - boxSize * 2.0f));
+        points.push_back(ImVec2(nearest.x() * boxSize * 2.0f + boxSize * 2.0f, -nearest.y() * boxSize * 2.0f - boxSize * 2.0f));
+        adding_line = true;
+    }
+    if (adding_line) {
+        // points.back() = ImVec2(trans.x(), trans.y());
+        points.back() = ImVec2(nearest.x() * boxSize * 2.0f + boxSize * 2.0f, -nearest.y() * boxSize * 2.0f - boxSize * 2.0f);
+        if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            adding_line = false;
+    }
 
     // Pan (we use a zero mouse threshold when there's no context menu)
     // You may decide to make that threshold dynamic based on whether the mouse is hovering something etc.
