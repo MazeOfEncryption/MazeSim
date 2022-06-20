@@ -10,8 +10,8 @@ enable_testing()
 find_package(OpenGL REQUIRED)
 # find_package(imgui REQUIRED)
 
-add_subdirectory(lib/glfw)
 add_subdirectory(lib/glad)
+add_subdirectory(lib/glfw)
 
 
 # Compile ImGui as static library 

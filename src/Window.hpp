@@ -7,20 +7,20 @@
 #include <sstream>
 namespace MazeSim {
 	class Window {
-		public:
-			bool active();
-			void clear();
-			void draw();
-			Window(std::string title, int width, int height);
-			~Window();
-			GLFWwindow* window;
-			double startTime, time, dt;
-		private:
-			static void glfwErrorCallback(int error, const char* description);
-			void init();
-			std::string title;
-			int width, height;
-			void glfwWindowHints();
+	public:
+		bool active();
+		void clear();
+		void draw();
+		Window(std::string title, int width, int height);
+		~Window();
+		GLFWwindow *window;
+		double startTime, time, dt;
+	private:
+		static void glfwErrorCallback(int error, const char *description);
+		void init();
+		std::string title;
+		int width, height;
+		void glfwWindowHints();
 	};
 }
 #endif
