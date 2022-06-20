@@ -2,7 +2,7 @@
 #include <set>
 #include <iostream>
 #include <random>
-#include "Wire.hpp"
+#include "Point.hpp"
 #include "Window.hpp"
 using namespace MazeSim;
 // using Point = std::pair<int, int>;
